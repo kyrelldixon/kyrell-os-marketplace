@@ -1,4 +1,5 @@
-import type { SessionInfo, WaitForTextResult } from "./tmux";
+import type { ExecuteResult } from "./execute";
+import type { SessionInfo, WaitForTextResult, WaitIdleResult } from "./tmux";
 
 export interface OutputOptions {
 	json?: boolean;
@@ -53,6 +54,44 @@ export function formatWaitResult(
 	}
 
 	return `Timed out after ${result.elapsed.toFixed(1)}s. No match found.`;
+}
+
+export function formatExecute(
+	result: ExecuteResult,
+	options: OutputOptions = {},
+): string {
+	if (options.json) {
+		return JSON.stringify(result, null, 2);
+	}
+
+	const status =
+		result.exitCode === 0
+			? "OK"
+			: result.exitCode === -1
+				? "TIMEOUT"
+				: `FAILED (exit ${result.exitCode})`;
+	const header = `${status} in ${result.elapsed.toFixed(1)}s`;
+
+	if (!result.output) {
+		return header;
+	}
+
+	return `${header}\n${result.output}`;
+}
+
+export function formatWaitIdle(
+	result: WaitIdleResult,
+	options: OutputOptions = {},
+): string {
+	if (options.json) {
+		return JSON.stringify(result, null, 2);
+	}
+
+	if (result.idle) {
+		return `Became idle after ${result.elapsed.toFixed(1)}s`;
+	}
+
+	return `Timed out after ${result.elapsed.toFixed(1)}s. Pane still active.`;
 }
 
 export function formatList<T>(

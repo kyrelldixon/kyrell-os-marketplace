@@ -6,6 +6,7 @@ import {
 	newSession,
 	sendKeys,
 	waitForText,
+	waitIdle,
 } from "../src/lib/tmux";
 
 const TEST_SOCKET = "tmx-test";
@@ -183,6 +184,58 @@ describe("tmux integration", () => {
 
 		// Text should be on the command line but not executed
 		expect(content).toContain("partial text");
+
+		await killServer();
+	});
+
+	test("waitIdle detects stable content", async () => {
+		await killServer();
+		await newSession({ name: TEST_SESSION, socket: TEST_SOCKET });
+
+		// Send a command and let it complete
+		await sendKeys({
+			target: TEST_SESSION,
+			text: "echo stable_content",
+			socket: TEST_SOCKET,
+		});
+		await Bun.sleep(500);
+
+		const result = await waitIdle({
+			target: TEST_SESSION,
+			idleTime: 1,
+			timeout: 5,
+			interval: 0.3,
+			socket: TEST_SOCKET,
+		});
+
+		expect(result.idle).toBe(true);
+		expect(result.elapsed).toBeLessThan(5);
+		expect(result.lastCapture).toContain("stable_content");
+
+		await killServer();
+	});
+
+	test("waitIdle times out if content keeps changing", async () => {
+		await killServer();
+		await newSession({ name: TEST_SESSION, socket: TEST_SOCKET });
+
+		// Start a command that produces continuous output
+		await sendKeys({
+			target: TEST_SESSION,
+			text: "for i in $(seq 1 100); do echo $i; sleep 0.3; done",
+			socket: TEST_SOCKET,
+		});
+
+		const result = await waitIdle({
+			target: TEST_SESSION,
+			idleTime: 2,
+			timeout: 3,
+			interval: 0.3,
+			socket: TEST_SOCKET,
+		});
+
+		expect(result.idle).toBe(false);
+		expect(result.elapsed).toBeGreaterThanOrEqual(2.5);
 
 		await killServer();
 	});

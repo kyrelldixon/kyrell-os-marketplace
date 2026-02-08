@@ -29,6 +29,12 @@ tmx kill-session <name> [--json] [--socket <name>]
 
 # Wait for regex pattern to appear in pane
 tmx wait-for-text <target> <pattern> [--timeout <seconds>] [--interval <seconds>] [--lines <n>] [--json] [--socket <name>]
+
+# Execute a command and capture output + exit code (marker-based)
+tmx execute <target> <command> [--timeout <seconds>] [--interval <seconds>] [--json] [--socket <name>]
+
+# Wait for pane content to become stable (idle)
+tmx wait-idle <target> [--idle-time <seconds>] [--timeout <seconds>] [--interval <seconds>] [--lines <n>] [--json] [--socket <name>]
 ```
 
 ## When to Use What
@@ -42,6 +48,9 @@ tmx wait-for-text <target> <pattern> [--timeout <seconds>] [--interval <seconds>
 | Read scrollback history | `tmx capture-pane <target> --lines 500` |
 | Wait for server to start | `tmx wait-for-text dev "listening on port"` |
 | Wait for build to finish | `tmx wait-for-text build "Build complete\|error" --timeout 60` |
+| Run a command and check exit code | `tmx execute dev "npm test" --json` |
+| Check if build passed | `tmx execute ci "npm run build" --json` |
+| Wait for unknown process to finish | `tmx wait-idle build --timeout 60` |
 | Type without executing | `tmx send-keys <target> "partial" --no-enter` |
 | Clean up a session | `tmx kill-session <name>` |
 
@@ -87,10 +96,23 @@ All commands support `--json`. Key structures:
 { "target": "dev", "sent": true }
 ```
 
+**execute:**
+```json
+{ "output": "All tests passed", "exitCode": 0, "elapsed": 3.2 }
+```
+
+**wait-idle:**
+```json
+{ "idle": true, "elapsed": 4.1, "lastCapture": "..." }
+```
+
 ## Notes
 
 - **Timing fix:** `send-keys` automatically separates text from Enter with a 0.1s delay. Increase with `--delay 0.5` if the target shell is slow.
 - **wait-for-text exits 1 on timeout** — use this for conditional logic.
 - **Regex patterns:** `wait-for-text` uses JavaScript regex syntax. Escape special chars: `\.`, `\|`, `\$`.
 - **Scrollback:** Default `--lines` for `wait-for-text` is 1000. For `capture-pane` it captures visible area only unless `--lines` is specified.
+- **execute sends markers** — wraps your command in unique markers to detect exit code. Output includes both stdout and stderr.
+- **execute exits 1 on non-zero exit code** — use this for conditional logic. exitCode -1 means timeout.
+- **wait-idle uses content hashing** — detects when pane stops changing. Default idle threshold is 2s.
 - **Sessions are detached** — `new-session` creates detached sessions (agent-friendly). The user can attach separately if they want.
