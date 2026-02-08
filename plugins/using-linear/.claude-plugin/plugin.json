@@ -1,7 +1,7 @@
 {
-  "name": "using-linear",
-  "version": "0.1.0",
-  "description": "Linear issue and project management CLI + skill",
-  "author": { "name": "Kyrell Dixon" },
-  "license": "MIT"
+	"name": "using-linear",
+	"version": "0.1.0",
+	"description": "Linear issue and project management CLI + skill",
+	"author": { "name": "Kyrell Dixon" },
+	"license": "MIT"
 }

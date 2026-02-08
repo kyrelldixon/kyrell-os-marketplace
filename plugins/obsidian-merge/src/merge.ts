@@ -1,5 +1,5 @@
+import { mkdir, stat } from "node:fs/promises";
 import { join } from "node:path";
-import { stat, mkdir } from "node:fs/promises";
 
 export interface MergeOptions {
 	/** Prefer target files when conflicts occur (default: prefer source) */

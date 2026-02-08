@@ -1,7 +1,7 @@
 {
-  "name": "developer-skills",
-  "version": "0.1.0",
-  "description": "Essential development workflow skills",
-  "author": { "name": "Kyrell Dixon" },
-  "license": "MIT"
+	"name": "developer-skills",
+	"version": "0.1.0",
+	"description": "Essential development workflow skills",
+	"author": { "name": "Kyrell Dixon" },
+	"license": "MIT"
 }

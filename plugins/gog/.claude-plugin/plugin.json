@@ -1,7 +1,7 @@
 {
-  "name": "gog",
-  "version": "0.1.0",
-  "description": "Google Docs CLI reference skill",
-  "author": { "name": "Kyrell Dixon" },
-  "license": "MIT"
+	"name": "gog",
+	"version": "0.1.0",
+	"description": "Google Docs CLI reference skill",
+	"author": { "name": "Kyrell Dixon" },
+	"license": "MIT"
 }

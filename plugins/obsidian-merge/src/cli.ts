@@ -77,7 +77,9 @@ async function main() {
 
 		if (result.conflicts.length > 0) {
 			const action = preferTarget ? "kept target" : "used source";
-			console.log(`⚠️  Conflicts resolved - ${action} (${result.conflicts.length}):`);
+			console.log(
+				`⚠️  Conflicts resolved - ${action} (${result.conflicts.length}):`,
+			);
 			for (const file of result.conflicts) {
 				console.log(`   ${file}`);
 			}
@@ -93,7 +95,9 @@ async function main() {
 		}
 
 		if (dryRun) {
-			console.log("✨ Dry run complete. Run without --dry-run to apply changes.");
+			console.log(
+				"✨ Dry run complete. Run without --dry-run to apply changes.",
+			);
 		} else {
 			console.log("✨ Merge complete!");
 		}

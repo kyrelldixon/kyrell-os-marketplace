@@ -1,8 +1,8 @@
-import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import { mergeObsidianSettings } from "../src/merge";
-import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { mkdir, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { rm, mkdir, stat } from "node:fs/promises";
+import { join } from "node:path";
+import { mergeObsidianSettings } from "../src/merge";
 
 const TEST_DIR = join(tmpdir(), "obsidian-merge-tests");
 
@@ -99,7 +99,11 @@ describe("mergeObsidianSettings", () => {
 	});
 
 	test("skips workspace-mobile.json", async () => {
-		await createTestFile(sourcePath, "workspace-mobile.json", '{"mobile": true}');
+		await createTestFile(
+			sourcePath,
+			"workspace-mobile.json",
+			'{"mobile": true}',
+		);
 
 		const result = await mergeObsidianSettings(sourcePath, targetPath);
 
@@ -152,7 +156,9 @@ describe("mergeObsidianSettings", () => {
 		const result = await mergeObsidianSettings(sourcePath, targetPath);
 
 		expect(result.copied).toContain(join("snippets", "custom.css"));
-		const content = await readTestFile(join(targetPath, "snippets", "custom.css"));
+		const content = await readTestFile(
+			join(targetPath, "snippets", "custom.css"),
+		);
 		expect(content).toBe(".test { }");
 	});
 
@@ -177,9 +183,13 @@ describe("mergeObsidianSettings", () => {
 		await createTestFile(sourcePath, "appearance.json", '{"theme": "dark"}');
 		await createTestFile(sourcePath, "core-plugins.json", '["daily-notes"]');
 		await createTestFile(sourcePath, "community-plugins.json", '["dataview"]');
-		await createTestFile(sourcePath, "hotkeys.json", '{}');
+		await createTestFile(sourcePath, "hotkeys.json", "{}");
 		await createTestFile(sourcePath, "daily-notes.json", '{"folder": "daily"}');
-		await createTestFile(sourcePath, "templates.json", '{"folder": "templates"}');
+		await createTestFile(
+			sourcePath,
+			"templates.json",
+			'{"folder": "templates"}',
+		);
 
 		const result = await mergeObsidianSettings(sourcePath, targetPath);
 
