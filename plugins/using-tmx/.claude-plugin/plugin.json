@@ -1,7 +1,9 @@
 {
 	"name": "using-tmx",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "tmux wrapper CLI + skill for process observability",
-	"author": { "name": "Kyrell Dixon" },
+	"author": {
+		"name": "Kyrell Dixon"
+	},
 	"license": "MIT"
 }
