@@ -278,3 +278,76 @@ export async function waitForText(
 		lastCapture,
 	};
 }
+
+export interface WaitIdleOptions extends TmuxOptions {
+	target: string;
+	/** How long content must be stable to declare idle, in seconds (default: 2) */
+	idleTime?: number;
+	/** Timeout in seconds (default: 30) */
+	timeout?: number;
+	/** Poll interval in seconds (default: 0.5) */
+	interval?: number;
+	/** Scrollback lines to capture (default: 1000) */
+	lines?: number;
+}
+
+export interface WaitIdleResult {
+	/** True if pane became idle */
+	idle: boolean;
+	/** Time elapsed in seconds */
+	elapsed: number;
+	/** Last captured pane content */
+	lastCapture: string;
+}
+
+/**
+ * Wait until a tmux pane's content stops changing.
+ *
+ * Hashes pane content on each poll. When the hash remains unchanged
+ * for `idleTime` seconds, the pane is considered idle. Useful when
+ * you don't know what the shell prompt looks like.
+ */
+export async function waitIdle(
+	options: WaitIdleOptions,
+): Promise<WaitIdleResult> {
+	const idleTime = options.idleTime ?? 2;
+	const timeout = options.timeout ?? 30;
+	const interval = options.interval ?? 0.5;
+	const lines = options.lines ?? 1000;
+
+	const start = Date.now();
+	const deadline = start + timeout * 1000;
+
+	let lastHash: number | bigint = 0;
+	let lastChangedAt = Date.now();
+	let lastCapture = "";
+
+	while (Date.now() < deadline) {
+		lastCapture = await capturePane({
+			target: options.target,
+			lines,
+			socket: options.socket,
+		});
+
+		const hash = Bun.hash(lastCapture);
+
+		if (hash !== lastHash) {
+			lastHash = hash;
+			lastChangedAt = Date.now();
+		} else if (Date.now() - lastChangedAt >= idleTime * 1000) {
+			return {
+				idle: true,
+				elapsed: (Date.now() - start) / 1000,
+				lastCapture,
+			};
+		}
+
+		await Bun.sleep(interval * 1000);
+	}
+
+	return {
+		idle: false,
+		elapsed: (Date.now() - start) / 1000,
+		lastCapture,
+	};
+}
