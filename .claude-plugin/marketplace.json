@@ -1,0 +1,66 @@
+{
+  "name": "kyrell-os-marketplace",
+  "version": "1.0.0",
+  "description": "Claude Code plugins for building and running a consulting business",
+  "owner": {
+    "name": "Kyrell Dixon"
+  },
+  "plugins": [
+    {
+      "name": "using-linear",
+      "version": "0.1.0",
+      "source": "./plugins/using-linear",
+      "description": "Linear issue and project management CLI + skill",
+      "category": "productivity",
+      "author": { "name": "Kyrell Dixon" }
+    },
+    {
+      "name": "using-tmx",
+      "version": "0.1.0",
+      "source": "./plugins/using-tmx",
+      "description": "tmux wrapper CLI + skill for process observability",
+      "category": "development",
+      "author": { "name": "Kyrell Dixon" }
+    },
+    {
+      "name": "obsidian-merge",
+      "version": "0.1.0",
+      "source": "./plugins/obsidian-merge",
+      "description": "Merge Obsidian .obsidian folders intelligently",
+      "category": "productivity",
+      "author": { "name": "Kyrell Dixon" }
+    },
+    {
+      "name": "handoff",
+      "version": "0.1.0",
+      "source": "./plugins/handoff",
+      "description": "Session handoff orchestration via Linear",
+      "category": "productivity",
+      "author": { "name": "Kyrell Dixon" }
+    },
+    {
+      "name": "gog",
+      "version": "0.1.0",
+      "source": "./plugins/gog",
+      "description": "Google Docs CLI reference skill",
+      "category": "productivity",
+      "author": { "name": "Kyrell Dixon" }
+    },
+    {
+      "name": "using-acli",
+      "version": "0.1.0",
+      "source": "./plugins/using-acli",
+      "description": "Atlassian CLI (Jira) reference skill",
+      "category": "productivity",
+      "author": { "name": "Kyrell Dixon" }
+    },
+    {
+      "name": "developer-skills",
+      "version": "0.1.0",
+      "source": "./plugins/developer-skills",
+      "description": "Essential development workflow skills: bootstrapping, CLI building, skill creation, dev workflow, process mapping",
+      "category": "development",
+      "author": { "name": "Kyrell Dixon" }
+    }
+  ]
+}

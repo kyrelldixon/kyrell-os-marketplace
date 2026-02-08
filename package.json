@@ -1,0 +1,17 @@
+{
+  "name": "kyrell-os-marketplace",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["plugins/*"],
+  "scripts": {
+    "test": "bun test --recursive",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write --unsafe .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "latest",
+    "typescript": "^5.9.3"
+  }
+}

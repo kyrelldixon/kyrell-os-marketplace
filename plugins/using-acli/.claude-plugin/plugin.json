@@ -1,0 +1,7 @@
+{
+  "name": "using-acli",
+  "version": "0.1.0",
+  "description": "Atlassian CLI (Jira) reference skill",
+  "author": { "name": "Kyrell Dixon" },
+  "license": "MIT"
+}
