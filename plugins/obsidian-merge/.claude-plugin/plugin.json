@@ -1,7 +1,0 @@
-{
-	"name": "obsidian-merge",
-	"version": "0.1.0",
-	"description": "Merge Obsidian .obsidian folders intelligently",
-	"author": { "name": "Kyrell Dixon" },
-	"license": "MIT"
-}

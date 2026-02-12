@@ -6,7 +6,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "${CLAUDE_PLUGIN_ROOT}/scripts/bootstrap.sh"
+						"command": "command -v linear &> /dev/null || echo '[using-linear] linear CLI not found. Install via kos-kit: https://github.com/kyrelldixon/kos-kit'"
 					}
 				]
 			}

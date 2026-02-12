@@ -6,7 +6,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "${CLAUDE_PLUGIN_ROOT}/scripts/bootstrap.sh"
+						"command": "command -v tmx &> /dev/null || echo '[using-tmx] tmx CLI not found. Install via kos-kit: https://github.com/kyrelldixon/kos-kit'"
 					}
 				]
 			}
