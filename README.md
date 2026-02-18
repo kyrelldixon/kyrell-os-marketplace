@@ -20,7 +20,6 @@ Then browse and install plugins:
 |--------|------|-------------|
 | **using-linear** | CLI + skill | Linear issue and project management |
 | **using-tmx** | CLI + skill | tmux wrapper for process observability |
-| **obsidian-merge** | CLI | Merge Obsidian `.obsidian` folders |
 | **handoff** | Skill | Session handoff orchestration via Linear |
 | **gog** | Skill | Google Docs CLI reference |
 | **using-acli** | Skill | Atlassian/Jira CLI reference |

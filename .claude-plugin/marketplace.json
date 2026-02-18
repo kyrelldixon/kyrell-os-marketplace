@@ -27,16 +27,6 @@
 			}
 		},
 		{
-			"name": "obsidian-merge",
-			"version": "0.1.0",
-			"source": "./plugins/obsidian-merge",
-			"description": "Merge Obsidian .obsidian folders intelligently",
-			"category": "productivity",
-			"author": {
-				"name": "Kyrell Dixon"
-			}
-		},
-		{
 			"name": "handoff",
 			"version": "0.1.0",
 			"source": "./plugins/handoff",
@@ -58,7 +48,7 @@
 		},
 		{
 			"name": "using-acli",
-			"version": "0.1.0",
+			"version": "0.2.0",
 			"source": "./plugins/using-acli",
 			"description": "Atlassian CLI (Jira) reference skill",
 			"category": "productivity",

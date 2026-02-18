@@ -19,7 +19,7 @@ See `~/kyrell-os-vault/artifacts/Linear Usage Guide.md` for:
 ```json
 {
   "default_team": "KYR",
-  "env_file": "~/projects/kyrell-os/.env"
+  "env_file": "~/.linear-cli/.env"
 }
 ```
 
