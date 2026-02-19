@@ -1,6 +1,6 @@
 # kyrell-os-marketplace
 
-Open-source Claude Code plugins — CLI tools, skills, and workflows I actually use.
+Open-source Claude Code plugins — skills and workflows I actually use.
 
 ## Install
 
@@ -8,7 +8,7 @@ Open-source Claude Code plugins — CLI tools, skills, and workflows I actually 
 /plugin marketplace add kyrelldixon/kyrell-os-marketplace
 ```
 
-Then browse and install plugins:
+Then install individual plugins:
 
 ```
 /plugin install plugin-name@kyrell-os-marketplace
@@ -16,14 +16,14 @@ Then browse and install plugins:
 
 ## Plugins
 
-| Plugin | Type | Description |
-|--------|------|-------------|
-| **using-linear** | CLI + skill | Linear issue and project management |
-| **using-tmx** | CLI + skill | tmux wrapper for process observability |
-| **handoff** | Skill | Session handoff orchestration via Linear |
-| **gog** | Skill | Google Docs CLI reference |
-| **using-acli** | Skill | Atlassian/Jira CLI reference |
-| **developer-skills** | Skills | Bootstrapping, CLI building, skill creation, dev workflow, process mapping |
+| Plugin | Description |
+|--------|-------------|
+| **using-linear** | Manage Linear issues and projects via the `linear` CLI |
+| **using-tmx** | Observe and interact with persistent processes via `tmx` and tmux |
+| **handoff** | Session handoff orchestration — syncs Linear and generates context for the next session |
+| **gog** | Work with Google Docs via the `gog` CLI |
+| **using-acli** | Manage Jira issues via the `acli` CLI |
+| **developer-skills** | Bootstrapping Claude Code, building CLIs, creating skills, and dev workflow |
 
 ## License
 

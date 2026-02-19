@@ -10,7 +10,7 @@
 			"name": "using-linear",
 			"version": "0.1.0",
 			"source": "./plugins/using-linear",
-			"description": "Linear issue and project management CLI + skill",
+			"description": "Manage Linear issues and projects via the linear CLI",
 			"category": "productivity",
 			"author": {
 				"name": "Kyrell Dixon"
@@ -20,7 +20,7 @@
 			"name": "using-tmx",
 			"version": "0.2.0",
 			"source": "./plugins/using-tmx",
-			"description": "tmux wrapper CLI + skill for process observability",
+			"description": "Observe and interact with persistent processes via tmx and tmux",
 			"category": "development",
 			"author": {
 				"name": "Kyrell Dixon"
@@ -60,7 +60,7 @@
 			"name": "developer-skills",
 			"version": "0.1.0",
 			"source": "./plugins/developer-skills",
-			"description": "Essential development workflow skills: bootstrapping, CLI building, skill creation, dev workflow, process mapping",
+			"description": "Essential development workflow skills: bootstrapping, CLI building, skill creation, dev workflow",
 			"category": "development",
 			"author": {
 				"name": "Kyrell Dixon"
