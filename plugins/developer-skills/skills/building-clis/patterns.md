@@ -1,47 +1,235 @@
 # CLI Patterns Reference
 
-Common patterns for building CLIs with Bun + TypeScript + citty.
+Patterns for building CLIs with Bun + TypeScript + citty.
 
-## Authentication Patterns
+## Project Setup
 
-### Environment Variable (Preferred)
+### package.json
+
+```json
+{
+  "name": "cli-name",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "cli-name": "./src/cli.ts"
+  },
+  "scripts": {
+    "dev": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write --unsafe .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "citty": "^0.1.6",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "latest",
+    "typescript": "^5.9.3"
+  }
+}
+```
+
+### tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["bun-types"],
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src"]
+}
+```
+
+### biome.json
+
+```json
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "organizeImports": { "enabled": true },
+  "linter": { "enabled": true },
+  "formatter": {
+    "indentStyle": "tab",
+    "lineWidth": 120
+  }
+}
+```
+
+## citty Patterns
+
+### Single command CLI
+
+```typescript
+#!/usr/bin/env bun
+import { defineCommand, runMain } from "citty";
+
+const main = defineCommand({
+  meta: { name: "cli-name", description: "What it does", version: "0.1.0" },
+  args: {
+    target: { type: "positional", required: true, description: "The target" },
+    json: { type: "boolean", description: "Output as JSON" },
+  },
+  async run({ args }) {
+    // Implementation
+  },
+});
+
+runMain(main);
+```
+
+### Multi-command CLI with subcommands
+
+```typescript
+#!/usr/bin/env bun
+import { defineCommand, runMain } from "citty";
+
+const list = defineCommand({
+  meta: { name: "list", description: "List items" },
+  args: {
+    status: { type: "string", description: "Filter by status" },
+    json: { type: "boolean", description: "Output as JSON" },
+  },
+  async run({ args }) { /* ... */ },
+});
+
+const create = defineCommand({
+  meta: { name: "create", description: "Create item" },
+  args: {
+    name: { type: "positional", required: true },
+  },
+  async run({ args }) { /* ... */ },
+});
+
+const main = defineCommand({
+  meta: { name: "cli-name", version: "0.1.0" },
+  subCommands: { list, create },
+});
+
+runMain(main);
+```
+
+### Setup hooks (auth-skipping pattern)
+
+From the linear CLI — skip config loading for commands that don't need it:
+
+```typescript
+const main = defineCommand({
+  meta: { name: "cli-name" },
+  async setup() {
+    const isAuth = process.argv.includes("auth");
+    const isHelp = process.argv.includes("--help");
+    if (isAuth || isHelp) return;
+
+    const config = await loadConfig();
+    initClient(config);
+  },
+  subCommands: { auth, list, create },
+});
+```
+
+### Common flag definitions
+
+```typescript
+args: {
+  // Output
+  json: { type: "boolean", description: "Output as JSON", default: false },
+
+  // Pagination
+  limit: { type: "string", default: "100", description: "Max results" },
+
+  // Filtering
+  status: { type: "string", description: "Filter by status" },
+
+  // Targeting
+  id: { type: "positional", required: true, description: "Resource ID" },
+}
+```
+
+## Authentication
+
+### Environment variable (preferred for simple cases)
 
 ```typescript
 const token = process.env.SERVICE_TOKEN;
 if (!token) {
-  console.error("Error: SERVICE_TOKEN environment variable required");
-  process.exit(1);
+  error("cli-name", "SERVICE_TOKEN not set", "AUTH_REQUIRED",
+    "Set SERVICE_TOKEN environment variable: export SERVICE_TOKEN=your-token");
 }
 ```
 
-### Config File (For multiple values)
+### Config file (for multiple values)
 
 ```typescript
-import { homedir } from "os";
-import { join } from "path";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
-const configPath = join(homedir(), ".config", "cli-name", "config.json");
-const config = await Bun.file(configPath).json().catch(() => ({}));
+const configDir = join(homedir(), ".cli-name");
+const configPath = join(configDir, "config.json");
+
+async function loadConfig(): Promise<Config> {
+  const file = Bun.file(configPath);
+  if (!(await file.exists())) {
+    error("cli-name", "Not configured", "CONFIG_MISSING",
+      `Run 'cli-name auth' to set up configuration`);
+  }
+  return file.json();
+}
+
+async function saveConfig(config: Config): Promise<void> {
+  await Bun.write(configPath, JSON.stringify(config, null, 2));
+}
 ```
 
-## HTTP Request Patterns
+### Auth command pattern
 
-### Basic fetch with auth
+```typescript
+const auth = defineCommand({
+  meta: { name: "auth", description: "Configure authentication" },
+  args: {
+    token: { type: "string", description: "API token" },
+  },
+  async run({ args }) {
+    const configDir = join(homedir(), ".cli-name");
+    await mkdir(configDir, { recursive: true });
+    await Bun.write(join(configDir, "config.json"), JSON.stringify({
+      api_key: args.token,
+    }, null, 2));
+    success("cli-name auth", { configured: true }, [
+      { command: "cli-name list", description: "List items to verify auth" },
+    ]);
+  },
+});
+```
+
+## HTTP / API Patterns
+
+### fetch with auth
 
 ```typescript
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
     headers: {
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
       ...options.headers,
     },
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`API error ${response.status}: ${error}`);
+    const body = await response.text();
+    throw new Error(`API error ${response.status}: ${body}`);
   }
 
   return response.json();
@@ -51,8 +239,8 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
 ### Pagination
 
 ```typescript
-async function fetchAll(endpoint: string) {
-  const results = [];
+async function fetchAll<T>(endpoint: string): Promise<T[]> {
+  const results: T[] = [];
   let cursor: string | undefined;
 
   do {
@@ -66,125 +254,81 @@ async function fetchAll(endpoint: string) {
 }
 ```
 
-## Output Formatting
-
-### JSON output (for piping)
+### GraphQL (from linear CLI)
 
 ```typescript
-if (args.json) {
-  console.log(JSON.stringify(data, null, 2));
-  return;
+import { LinearClient } from "@linear/sdk";
+
+let client: LinearClient;
+
+function initClient(apiKey: string) {
+  client = new LinearClient({ apiKey });
 }
+
+// SDK methods return typed objects
+const issues = await client.issues({ first: 50 });
 ```
 
-### Human-readable table
+## Validation
+
+### Zod 4 for input validation
 
 ```typescript
-function printTable(items: Array<Record<string, unknown>>, columns: string[]) {
-  // Header
-  console.log(columns.join("\t"));
-  console.log(columns.map(() => "---").join("\t"));
+import { z } from "zod";
 
-  // Rows
-  for (const item of items) {
-    console.log(columns.map(col => item[col] ?? "").join("\t"));
+const CreateInput = z.object({
+  title: z.string().min(1, "Title is required"),
+  priority: z.enum(["none", "urgent", "high", "medium", "low"]).optional(),
+});
+
+// Parse with actionable errors
+function parseInput<T>(schema: z.ZodSchema<T>, data: unknown, command: string): T {
+  const result = schema.safeParse(data);
+  if (!result.success) {
+    const issue = result.error.issues[0];
+    error(command, `${issue.path.join(".")}: ${issue.message}`, "VALIDATION_ERROR",
+      `Fix the ${issue.path.join(".")} field and retry`);
   }
+  return result.data;
 }
 ```
 
-## Error Handling
+### Actionable error messages
 
-### Graceful error exit
-
-```typescript
-try {
-  await main();
-} catch (error) {
-  if (error instanceof Error) {
-    console.error(`Error: ${error.message}`);
-  } else {
-    console.error("Unknown error occurred");
-  }
-  process.exit(1);
-}
-```
-
-### Network error handling
+Never dump raw Zod errors. Transform them:
 
 ```typescript
-try {
-  const data = await apiRequest("/endpoint");
-} catch (error) {
-  if (error instanceof TypeError && error.message.includes("fetch")) {
-    console.error("Network error: Could not connect to API");
-  } else {
-    throw error;
-  }
-}
+// Bad: ZodError: Expected string, received undefined at "title"
+// Good: "title: Required. Provide a title as the first positional argument."
 ```
 
-## citty Command Structure
+## Installability
 
-### Single command CLI
+### Development — bun link
 
+```bash
+# In the CLI project directory
+bun link
+
+# Now available globally during development
+cli-name --help
+```
+
+### Distribution — compile to binary
+
+```bash
+# Build standalone binary
+bun build src/cli.ts --compile --outfile cli-name
+
+# Install to PATH
+cp cli-name ~/.bun/bin/
+```
+
+### Shebang for direct execution
+
+First line of `src/cli.ts`:
 ```typescript
-import { defineCommand, runMain } from "citty";
-
-const main = defineCommand({
-  meta: { name: "cli-name", description: "What it does" },
-  args: {
-    target: { type: "positional", required: true, description: "The target" },
-    verbose: { type: "boolean", alias: "v", description: "Verbose output" },
-    format: { type: "string", default: "table", description: "Output format" },
-  },
-  async run({ args }) {
-    // Implementation
-  },
-});
-
-runMain(main);
+#!/usr/bin/env bun
 ```
 
-### Multi-command CLI (subcommands)
-
-```typescript
-import { defineCommand, runMain } from "citty";
-
-const list = defineCommand({
-  meta: { name: "list", description: "List items" },
-  async run() { /* ... */ },
-});
-
-const create = defineCommand({
-  meta: { name: "create", description: "Create item" },
-  args: { name: { type: "positional", required: true } },
-  async run({ args }) { /* ... */ },
-});
-
-const main = defineCommand({
-  meta: { name: "cli-name" },
-  subCommands: { list, create },
-});
-
-runMain(main);
-```
-
-## Common Flags
-
-```typescript
-args: {
-  // Output control
-  json: { type: "boolean", description: "Output as JSON" },
-  quiet: { type: "boolean", alias: "q", description: "Suppress output" },
-  verbose: { type: "boolean", alias: "v", description: "Verbose output" },
-
-  // Pagination
-  limit: { type: "string", default: "100", description: "Max results" },
-
-  // Filtering
-  status: { type: "string", description: "Filter by status" },
-
-  // Targeting
-  id: { type: "positional", required: true, description: "Resource ID" },
-}
-```
+This lets the file run directly when the `bin` field points to it and it's linked via `bun link`.
