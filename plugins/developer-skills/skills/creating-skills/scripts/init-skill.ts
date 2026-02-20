@@ -24,7 +24,7 @@ function isKebabCase(name: string): boolean {
 function generateTemplate(skillName: string): string {
 	return `---
 name: ${skillName}
-description: TODO: What it does. USE WHEN [trigger phrases].
+description: Use when [trigger phrases].
 ---
 
 # ${skillName}
