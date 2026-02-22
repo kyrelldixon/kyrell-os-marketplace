@@ -1,0 +1,7 @@
+{
+	"name": "using-obsidian",
+	"version": "0.1.0",
+	"description": "Obsidian vault management via the obsidian CLI",
+	"author": { "name": "Kyrell Dixon" },
+	"license": "MIT"
+}

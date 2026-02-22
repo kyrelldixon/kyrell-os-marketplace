@@ -65,6 +65,16 @@
 			"author": {
 				"name": "Kyrell Dixon"
 			}
+		},
+		{
+			"name": "using-obsidian",
+			"version": "0.1.0",
+			"source": "./plugins/using-obsidian",
+			"description": "Obsidian vault management via the obsidian CLI",
+			"category": "productivity",
+			"author": {
+				"name": "Kyrell Dixon"
+			}
 		}
 	]
 }
