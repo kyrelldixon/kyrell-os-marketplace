@@ -117,6 +117,20 @@ If neither is provided, commands default to the active file in Obsidian.
 - **Templates:** Native Obsidian templates using `{{date:MM-DD-YYYY}}` and `{{title}}`
 - **Links:** Wikilinks (`[[Note Name]]`), not markdown links
 - **Properties:** YAML frontmatter for metadata
+- **Categories:** Array of wikilinks that determine note type (e.g., `["[[Sources]]"]`)
+
+## Templates
+
+**NEVER hardcode note formats.** Always use Obsidian templates from the vault's `templates/` directory.
+
+When creating structured notes:
+1. `obsidian templates` — check what exists
+2. `obsidian template:read name="Template Name" resolve` — preview the template
+3. `obsidian create name="Title" template="Template Name"` — create from template
+4. `obsidian property:set` — populate frontmatter fields
+5. `obsidian append` — add body content
+
+When building pipelines or tools that create vault notes, read **TEMPLATES.md** for the full guide on template conventions, frontmatter patterns, and programmatic note creation.
 
 ## Process
 
@@ -127,6 +141,7 @@ When working with the vault:
 3. Use `append`/`prepend` to add content (prefer over overwriting)
 4. Use `create` with templates when creating structured notes
 5. Always quote file names that contain spaces
+6. When creating new note types, create a template first (see TEMPLATES.md)
 
 ## Notes
 
